@@ -2,9 +2,9 @@ var song;
 var fft;
 var button;
 var fullscreenIcon;
-var freq = 256;
+var audioIcon;
 var volume = 1;
-var playOpacity = menuOpacity = 256;
+var playOpacity = menuOpacity = freq = 256;
 var name = 'music/Pretty Lights - Finally Moving.mp3';
 
 
@@ -13,6 +13,7 @@ function preload()
 	song = loadSound(name); 
 	button = loadImage('images/button.png');
 	fullscreenIcon = loadImage('images/fullscreen.png');
+	audioIcon = loadImage('images/audio_icon.png');
 }
 
 function setup() 
@@ -41,12 +42,12 @@ function draw()
 	background(0);
 
 
-	fill(255);
-    stroke(255);
-    strokeWeight(1);
-    textSize(10);
-    text(mouseX, 10, 10);
-    text(mouseY, 60, 10);
+	//fill(255);
+    //stroke(255);
+    //strokeWeight(1);
+    //textSize(10);
+    //text(mouseX, 10, 10);
+    //text(mouseY, 60, 10);
 
 	var amp;
 	var dx = 0;
@@ -141,36 +142,86 @@ function displayMenu(menuOpacity)
 	if(menuOpacity == 0)
 		return;
 
-	push();
+	menuShadow(menuOpacity);	
 
 	//volumeBar
+	push();
+	translate(width - 304, height - 32);
+	scale(.2, .2);
+	tint(255, menuOpacity);
+	image(audioIcon, 0, 0);
+	pop();
+	audioHelper();
+
 	stroke(200, menuOpacity);
 	strokeWeight(4);
-	line(width - 260, height - 15, width - 60, height - 15);
-
+	line(width - 260, height - 15, width - 60, height - 15);	
 	stroke(255, menuOpacity);
 	strokeWeight(6);
 	line(width - 260, height - 15,
 		width - 260 + map(volume, 0, 1, 0, 200), height - 15);
 	ellipse(width - 260 + map(volume, 0, 1, 0, 200), height - 15, 10);
 
+
 	//fullscreen icon
+	push();
 	translate(width - 36, height - 28);
 	scale(.1, .1);
 	image(fullscreenIcon, 0, 0);
 	pop();
 
 
+
+}
+
+function menuShadow(menuOpacity)
+{
+	noStroke();
+	for(let i = 0; i < 32; i++)
+	{
+		fill(96 - i*3, menuOpacity - 180 - i*2);
+		rect(0, height - 38 - i/2, width, 1/2);
+	}
+
+	noFill();
+
+}
+
+function audioHelper()
+{
+	push();
+	stroke(0);
+	noFill();
+	strokeWeight(5);
+
+	translate(width - 304, height - 32);
+	if(volume < .66)
+		arc(20, 16, 26, 26, -HALF_PI, HALF_PI);
+	if(volume < .33)
+		arc(20, 16, 17, 17, -HALF_PI, HALF_PI);
+	if(volume < .02)
+	{
+		fill(0);
+		rect(20, 0, 40, 40);	
+	}
+	pop();
+
 }
 
 function mouseClicked()
 {
+	//center circle
 	if(impCircle(mouseX, mouseY, width/2, height/2, 100) < 0)
 		toggle();
+
+	//fullscreen button
 	if(impRect(mouseX, mouseY, width - 36, height - 30, 26, 26) < 0)
 	{
 		let screen = fullscreen();
+
+		
 		fullscreen(!screen);
+
 	}
 
 	
